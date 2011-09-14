@@ -1,4 +1,3 @@
-// define( ['require', 'exports', 'Util/dbg.js' ], function (require, exports, dbg ) {
 
 
 
@@ -97,7 +96,7 @@ function extendableFunction( f )
  
 	 extended.isExtended = 1 ;
 
-	
+
 
 	 extended.addAfter = function( next )
 		{
@@ -138,40 +137,35 @@ function extendableFunction( f )
 	}
 
 
-function Extendable()
-    {}
-    
 
-Extendable.prototype.after = function( callName, next )
+var after = function( obj, callName, next )
 	{
     
-	 var f = this[ callName ] ;
-	 if( !f.isExtended ) this[ callName ] = extendableFunction( this[ callName ] ) ;
-	 
-	 this[ callName ].addAfter( next ) ;
+	 var f = obj[ callName ] ;
+	 if( !f.isExtended ) obj[ callName ] = extendableFunction( obj[ callName ] ) ;
+
+	 obj[ callName ].addAfter( next ) ;
 	}
 
 
-Extendable.prototype.before = function( callName, first )
+var before = function( obj, callName, first )
 	{
+	
+	 var f = obj[ callName ] ;
+	 if( !f.isExtended ) obj[ callName ] = extendableFunction( obj[ callName ] ) ;
 
-	 var f = this[ callName ] ;
-	 if( !f.isExtended ) this[ callName ] = extendableFunction( this[ callName ] ) ;
-	 
-	 this[ callName ].addBefore( first ) ;
+	 obj[ callName ].addBefore( first ) ;
 	}
     
     
-Extendable.prototype.nameCall = function( name )
-    {
-     var self = this ;
-     
-     var argArray = new Array( self[ name ].length ) ;
+var nameCall = function( obj, name )
+    {     
+     var argArray = new Array( obj[ name ].length ) ;
      
      for( var i = 0 ; i < argArray.length ; i++ )
         argArray[ i ] = 'a' + i ;
      
-     var body = 'self[ name ].apply( self, arguments ) ;' ;
+     var body = 'obj[ name ].apply( obj, arguments ) ;' ;
      
      // argArray.push( body ) ;
      
@@ -179,13 +173,13 @@ Extendable.prototype.nameCall = function( name )
      
      eval( 'theNameCall = function( ' + argArray.toString() + ') { ' + body + ' } ; ' ) ;
      
-    // var theNameCall = Function.apply( self, argArray ) ;
+    // var theNameCall = Function.apply( obj, argArray ) ;
      
     
      return  theNameCall ; // function() { dbg.puts( 'name call ' + name + ' arguments ' + arguments.length ) ; self[ name ].apply( self, arguments ) ; } ;
     
     }
 
-exports.Extendable = Extendable ;
-
-//} ) ;
+exports.after    = after    ;
+exports.before   = before   ;
+exports.nameCall = nameCall ;
