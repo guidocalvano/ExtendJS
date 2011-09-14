@@ -8,7 +8,9 @@ example:
 var ext = require( 'Extendable' ) ;
 
 var obj = {} ;
+
 obj.func   = function( x ) { console.log( 'func ' + x ) ; } ;
+
 var listen = function( x ) { console.log( 'listen ' + x ) ; } ;
 
 ext.after( obj, 'func', listen ) ;
