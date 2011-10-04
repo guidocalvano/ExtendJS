@@ -1,5 +1,5 @@
 {
- "name": "Extendable",
+ "name": "extend",
  "version": "0.0.1",
- "main":"extendable.js"
+ "main":"extend.js"
 }

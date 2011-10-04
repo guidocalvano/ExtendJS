@@ -6,10 +6,28 @@ var returnUndefined = {} ;
 exports.returnUndefined = returnUndefined ;
 
 function ReturnImmediately( value )
-    {
+    {	
      this.value = value ;
     }
 
+function printNameCall( nc )
+	{
+	 console.log( nc.object.constructor.name + '.' + nc.callName ) ;
+	}
+
+function printCallSequence( b, a )
+	{
+	 console.log( 'EXTENDED CALLSEQUENCE' ) ;
+		
+     for( var i = b.length - 1 ; i >= 0 ; i-- )	
+		printNameCall( b[ i ] ) ;
+		
+	 console.log( 'original function' ) ;
+		
+	 for( var j = 0 ; j < a.length ; j++  ) 
+		printNameCall( a[ j ] ) ;
+
+	}
 
 function extendableFunction( f )
 	{
@@ -20,7 +38,7 @@ function extendableFunction( f )
 
 	 var extended = function() 
 		{
-        
+         printCallSequence( processBefore, processAfter ) ; 
         
          try
             {
@@ -30,16 +48,16 @@ function extendableFunction( f )
          catch( e )
             {
              if( e instanceof ReturnImmediately ) 
-                {
-                 return e.value ;
-                 
+                {		
+                 return e.value ;       
                 }
             }
 
          
 
          var returnMe  = f.apply( this, arguments) ;          
-         
+     	 console.log( 'returnMe at f ' + returnMe ) ;
+	    
          
          var argsAsArray = [] ;
                   
@@ -50,16 +68,28 @@ function extendableFunction( f )
             
          argsAsArray[ argsAsArray.length ] = returnMe ;
          
+		 console.log( 'f( ' + f.length + ' ) ' ) ;
          
          var returnValueAfter ;
          
 		 for( var j = 0 ; j < processAfter.length ; j++  ) 
 			{
-                          
-             if( processAfter[ j ].length == f.length + 1 )
+
+//			 console.log( "i : " + j ) ;
+
+             console.log( "after: " + processAfter[ j ].object.constructor.name + '.' + processAfter[ j ].callName + '( ' + processAfter[ j ].length + ' )' ) ;
+/*
+             console.log( "object name: " + processAfter[ j ].callName ) ;
+
+			 console.log( "arg count : " + processAfter[ j ].length ) ;
+
+			 console.log( "return me : " + returnMe ) ;
+*/
+
+         //    if( processAfter[ j ].length == f.length + 1 )
                 returnValueAfter = processAfter[ j ].apply( this, argsAsArray ) ;
-             else
-                returnValueAfter = processAfter[ j ].apply( this, arguments ) ;
+         //    else
+         //       returnValueAfter = processAfter[ j ].apply( this, arguments ) ;
                 
              if( returnValueAfter === returnUndefined )
                 {
@@ -83,7 +113,10 @@ function extendableFunction( f )
                 
              */
 			}
-            
+           
+		 console.log( 'returnMe ' + returnMe ) ;
+		 console.log( 'argsAsArray[ l - 1 ] ' + argsAsArray[ argsAsArray.length - 1 ] ) ;
+
 	 	 return argsAsArray[ argsAsArray.length - 1 ]  ;
 		}
 
@@ -137,49 +170,109 @@ function extendableFunction( f )
 	}
 
 
-
-var after = function( obj, callName, next )
+var createNameCall = function( obj, name )
 	{
-    
+   	 var theNameCall ;
+	
+	 var argArray = new Array( obj[ name ].length ) ;
+
+     for( var i = 0 ; i < argArray.length ; i++ )
+        argArray[ i ] = 'a' + i ;
+
+     var body = 'obj[ name ].apply( obj, arguments ) ;' ;
+
+     // argArray.push( body ) ;
+
+
+     eval( 'theNameCall = function( ' + argArray.toString() + ') { ' + body + ' } ; ' ) ;
+
+	 theNameCall.object = obj  ;
+	 theNameCall.callName   = name ;
+	 
+
+	 return theNameCall ;
+	}
+
+var nameCall = function( obj, name, mustRemove )
+    {     
+
+   	 var theNameCall ;
+
+	 if(  !( obj[ name ][ obj ] )  ) 
+		{	    
+		 theNameCall = createNameCall( obj, name ) ;
+	 	 obj[ name ][ obj ] = theNameCall ;
+		 theNameCall.refCount = 1 ;
+		}
+	 else
+		{
+		 theNameCall = obj[ name ][ obj ] ;
+		
+		 if( mustRemove ) 
+		 	{
+			 theNameCall.refCount-- ;
+			 if( theNameCall.refCount == 0 )
+				delete obj[ name ][ obj ] ;
+			}
+		 else
+		 	theNameCall.refCount++ ;			
+		
+		}
+
+     return  theNameCall ; // function() { dbg.puts( 'name call ' + name + ' arguments ' + arguments.length ) ; self[ name ].apply( self, arguments ) ; } ;
+
+    }
+
+var after = function( obj, callName, nextObj, nextCallName )
+	{
+     console.log( 'after ' + obj.constructor.name + '.' + callName + ' ' + nextObj.constructor.name + '.' + nextCallName ) ;
+
 	 var f = obj[ callName ] ;
 	 if( !f.isExtended ) obj[ callName ] = extendableFunction( obj[ callName ] ) ;
 
-	 obj[ callName ].addAfter( next ) ;
+	 obj[ callName ].addAfter( nameCall( nextObj, nextCallName ) ) ;
+	
 	}
 
 
-var before = function( obj, callName, first )
+var before = function( obj, callName, firstObj, firstCallName )
 	{
 	
 	 var f = obj[ callName ] ;
 	 if( !f.isExtended ) obj[ callName ] = extendableFunction( obj[ callName ] ) ;
 
-	 obj[ callName ].addBefore( first ) ;
+	 obj[ callName ].addBefore( nameCall( firstObj, firstCallName ) ) ;	
 	}
-    
-    
-var nameCall = function( obj, name )
-    {     
-     var argArray = new Array( obj[ name ].length ) ;
-     
-     for( var i = 0 ; i < argArray.length ; i++ )
-        argArray[ i ] = 'a' + i ;
-     
-     var body = 'obj[ name ].apply( obj, arguments ) ;' ;
-     
-     // argArray.push( body ) ;
-     
-     var theNameCall ;
-     
-     eval( 'theNameCall = function( ' + argArray.toString() + ') { ' + body + ' } ; ' ) ;
-     
-    // var theNameCall = Function.apply( obj, argArray ) ;
-     
-    
-     return  theNameCall ; // function() { dbg.puts( 'name call ' + name + ' arguments ' + arguments.length ) ; self[ name ].apply( self, arguments ) ; } ;
-    
-    }
+ 
 
-exports.after    = after    ;
-exports.before   = before   ;
-exports.nameCall = nameCall ;
+
+
+var removeAfter = function( obj, callName, nextObj, nextCallName )
+	{
+	 obj[ callName ].removeAfter( nameCall( nextObj, nextCallName, true ) ) ;
+	}
+
+
+var removeBefore = function( obj, firstObj, firstCallName )
+	{
+	 obj[ callName ].removeBefore( nameCall( firstObj, firstCallName, true ) ) ;
+
+	}
+
+var nextKey = 0 ;
+var key = function( obj )
+	{
+	 if( obj._____key )	
+		return obj._____key ;
+	 
+	 obj._____key = nextKey ; nextKey++ ;
+	
+	 return obj._____key ;
+	} ;
+
+
+exports.after    			= after   			 ;
+exports.before   			= before  			 ;
+exports.nameCall 			= nameCall			 ;
+exports.ReturnImmediately 	= ReturnImmediately	 ;
+exports.key		 		 	= key 				 ;
