@@ -272,18 +272,18 @@ var key = function( obj )
 	} ;
 
 
-var getEmbedded = function( obj, keyConstructorFunction )
+var getEmbedded = function( obj, keyContainer )
 	{
 	 if( !obj.____embedded ) return undefined ;
 			
-	 return obj.____embedded[ key( keyConstructorFunction.prototype ) ] ;
+	 return obj.____embedded[ key( keyContainer ) ] ;
 	} ;
 
-var setEmbedded = function( obj, keyConstructorFunction, embedded )
+var setEmbedded = function( obj, keyContainer, embedded )
 	{
 	 if( ! obj.____embedded ) obj.____embedded = {} ;
 		
-	 obj.____embedded[ key( keyConstructorFunction.prototype ) ] = embedded ;
+	 obj.____embedded[ key( keyContainer ) ] = embedded ;
 	} ;
 
 
