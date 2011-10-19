@@ -259,15 +259,31 @@ var removeBefore = function( obj, firstObj, firstCallName )
 
 	}
 
-var nextKey = 0 ;
+var nextKey = 1 ;
 var key = function( obj )
 	{
-	 if( obj._____key )	
-		return obj._____key ;
+	 if( obj.____key )	
+		return obj.____key ;
 	 
-	 obj._____key = nextKey ; nextKey++ ;
+	 console.log( 'assigning key' ) ;
+	 obj.____key = nextKey ; nextKey++ ;
 	
-	 return obj._____key ;
+	 return obj.____key ;
+	} ;
+
+
+var getEmbedded = function( obj, keyConstructorFunction )
+	{
+	 if( !obj.____embedded ) return undefined ;
+			
+	 return obj.____embedded[ key( keyConstructorFunction.prototype ) ] ;
+	} ;
+
+var setEmbedded = function( obj, keyConstructorFunction, embedded )
+	{
+	 if( ! obj.____embedded ) obj.____embedded = {} ;
+		
+	 obj.____embedded[ key( keyConstructorFunction.prototype ) ] = embedded ;
 	} ;
 
 
@@ -276,3 +292,5 @@ exports.before   			= before  			 ;
 exports.nameCall 			= nameCall			 ;
 exports.ReturnImmediately 	= ReturnImmediately	 ;
 exports.key		 		 	= key 				 ;
+exports.setEmbedded			= setEmbedded		 ;
+exports.getEmbedded			= getEmbedded		 ;
