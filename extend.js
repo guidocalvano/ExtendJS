@@ -56,7 +56,7 @@ function extendableFunction( f )
          
 
          var returnMe  = f.apply( this, arguments) ;          
-     	 console.log( 'returnMe at f ' + returnMe ) ;
+     	// console.log( 'returnMe at f ' + returnMe ) ;
 	    
          
          var argsAsArray = [] ;
@@ -114,8 +114,8 @@ function extendableFunction( f )
              */
 			}
            
-		 console.log( 'returnMe ' + returnMe ) ;
-		 console.log( 'argsAsArray[ l - 1 ] ' + argsAsArray[ argsAsArray.length - 1 ] ) ;
+		// console.log( 'returnMe ' + returnMe ) ;
+		// console.log( 'argsAsArray[ l - 1 ] ' + argsAsArray[ argsAsArray.length - 1 ] ) ;
 
 	 	 return argsAsArray[ argsAsArray.length - 1 ]  ;
 		}
