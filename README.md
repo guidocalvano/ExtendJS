@@ -5,7 +5,7 @@ I'm still adapting this code a lot. Given what it does, it is likely to become a
 
 example:
 
-var ext = require( 'Extendable' ) ;
+var ext = require( 'extend' ) ;
 
 var obj = {} ;
 
