@@ -38,7 +38,7 @@ function extendableFunction( f )
 
 	 var extended = function() 
 		{
-         printCallSequence( processBefore, processAfter ) ; 
+        // printCallSequence( processBefore, processAfter ) ; 
         
          try
             {
@@ -95,7 +95,7 @@ function extendableFunction( f )
                 {
                  argsAsArray[ argsAsArray.length - 1 ] = undefined ;
                 }
-             else if( returnValueAfter === 'undefined' )
+             else if( returnValueAfter === undefined )
                 {
                  continue ;
                 }
