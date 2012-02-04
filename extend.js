@@ -27,6 +27,8 @@ function printCallSequence( b, a )
 	 for( var j = 0 ; j < a.length ; j++  ) 
 		printNameCall( a[ j ] ) ;
 
+     console.log( 'END EXTENDED CALLSEQUENCE' ) ;
+     
 	}
 
 function extendableFunction( f )
@@ -38,17 +40,27 @@ function extendableFunction( f )
 
 	 var extended = function() 
 		{
-        // printCallSequence( processBefore, processAfter ) ; 
+         printCallSequence( processBefore, processAfter ) ; 
         
          try
             {
              for( var i = processBefore.length - 1 ; i >= 0 ; i-- )	
-                processBefore[ i ].apply( this, arguments) ; 
+                {
+                 console.log( "ACTUAL CALL " + i ) ;
+                
+                 printNameCall( processBefore[ i ] ) ;
+                
+                 processBefore[ i ].apply( this, arguments) ; 
+                 
+                 console.log( "ACTUAL CALL COMPLETE" ) ;
+                }
             }
          catch( e )
             {
              if( e instanceof ReturnImmediately ) 
-                {		
+                {
+                 console.log( 'RETURN IMMEDIATELY' ) ;
+                        		
                  return e.value ;       
                 }
             }
@@ -169,6 +181,18 @@ function extendableFunction( f )
 	 return extended ;
 	}
 
+var nextKey = 1 ;
+var key = function( obj )
+	{
+	 if( obj.____key )	
+		return obj.____key ;
+	 
+	 console.log( 'assigning key' ) ;
+	 obj.____key = nextKey ; nextKey++ ;
+	
+	 return obj.____key ;
+	} ;
+
 
 var createNameCall = function( obj, name )
 	{
@@ -259,23 +283,17 @@ var removeBefore = function( obj, firstObj, firstCallName )
 
 	}
 
-var nextKey = 1 ;
-var key = function( obj )
-	{
-	 if( obj.____key )	
-		return obj.____key ;
-	 
-	 console.log( 'assigning key' ) ;
-	 obj.____key = nextKey ; nextKey++ ;
-	
-	 return obj.____key ;
-	} ;
-
 
 var getEmbedded = function( obj, keyContainer )
 	{
+     console.log( 'embedded' ) ;
+    
 	 if( !obj.____embedded ) return undefined ;
-			
+	
+     for( var i in obj.____embedded ) console.log( 'key ' + i + ' ent ' + obj.____embedded ) ;
+     
+     console.log( 'key func ' + key( keyContainer ) ) ;
+    
 	 return obj.____embedded[ key( keyContainer ) ] ;
 	} ;
 
