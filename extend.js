@@ -222,21 +222,21 @@ var nameCall = function( obj, name, mustRemove )
 
    	 var theNameCall ;
 
-	 if(  !( obj[ name ][ obj ] )  ) 
+	 if(  !( obj[ name ][ key( obj ) ] )  ) 
 		{	    
 		 theNameCall = createNameCall( obj, name ) ;
-	 	 obj[ name ][ obj ] = theNameCall ;
+	 	 obj[ name ][ key( obj ) ] = theNameCall ;
 		 theNameCall.refCount = 1 ;
 		}
 	 else
 		{
-		 theNameCall = obj[ name ][ obj ] ;
+		 theNameCall = obj[ name ][ key( obj ) ] ;
 		
 		 if( mustRemove ) 
 		 	{
 			 theNameCall.refCount-- ;
 			 if( theNameCall.refCount == 0 )
-				delete obj[ name ][ obj ] ;
+				delete obj[ name ][ key( obj ) ] ;
 			}
 		 else
 		 	theNameCall.refCount++ ;			
