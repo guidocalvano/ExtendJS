@@ -188,11 +188,24 @@ var key = function( obj )
 		return obj.____key ;
 	 
 	 console.log( 'assigning key' ) ;
-	 obj.____key = nextKey ; nextKey++ ;
+	 obj.____key = 'key' + nextKey ; nextKey++ ;
 	
 	 return obj.____key ;
 	} ;
 
+
+
+var nextNameCallKey = 1 ;
+var nameCallKey = function( obj )
+	{
+	 if( obj.____nameCallKey )	
+		return obj.____nameCallKey ;
+	 
+	 console.log( 'assigning key' ) ;
+	 obj.____nameCallKey = 'key' + nextNameCallKey ; nextNameCallKey++ ;
+	
+	 return obj.____nameCallKey ;
+	} ;
 
 var createNameCall = function( obj, name )
 	{
@@ -212,6 +225,7 @@ var createNameCall = function( obj, name )
 
 	 theNameCall.object = obj  ;
 	 theNameCall.callName   = name ;
+     theNameCall.keyString = key( obj ) ;
 	 
 
 	 return theNameCall ;
@@ -222,21 +236,21 @@ var nameCall = function( obj, name, mustRemove )
 
    	 var theNameCall ;
 
-	 if(  !( obj[ name ][ key( obj ) ] )  ) 
+	 if(  !( obj[ name ][ nameCallKey( obj ) ] )  ) 
 		{	    
 		 theNameCall = createNameCall( obj, name ) ;
-	 	 obj[ name ][ key( obj ) ] = theNameCall ;
+	 	 obj[ name ][ nameCallKey( obj ) ] = theNameCall ;
 		 theNameCall.refCount = 1 ;
 		}
 	 else
 		{
-		 theNameCall = obj[ name ][ key( obj ) ] ;
+		 theNameCall = obj[ name ][ nameCallKey( obj ) ] ;
 		
 		 if( mustRemove ) 
 		 	{
 			 theNameCall.refCount-- ;
 			 if( theNameCall.refCount == 0 )
-				delete obj[ name ][ key( obj ) ] ;
+				delete obj[ name ][ nameCallKey( obj ) ] ;
 			}
 		 else
 		 	theNameCall.refCount++ ;			
@@ -312,3 +326,4 @@ exports.ReturnImmediately 	= ReturnImmediately	 ;
 exports.key		 		 	= key 				 ;
 exports.setEmbedded			= setEmbedded		 ;
 exports.getEmbedded			= getEmbedded		 ;
+exports.nameCallKey		 	= nameCallKey		 ;
